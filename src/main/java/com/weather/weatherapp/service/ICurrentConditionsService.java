@@ -12,4 +12,6 @@ public interface ICurrentConditionsService {
 	public ResponseEntity<Response> getCurrentConditions(String apikey, String cityId) throws IOException, InterruptedException;
 	
 	public CurrentConditions getCurrentConditionByID(Long id);
+	
+	public void deleteCurrentConditionByID(Long id);
 }

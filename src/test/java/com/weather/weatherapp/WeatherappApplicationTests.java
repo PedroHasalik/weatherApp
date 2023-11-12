@@ -33,6 +33,8 @@ class WeatherappApplicationTests {
 		
 		City city = locationService.getCityByID((long) 1);
 		
+		locationService.deleteCityByID((long) 1);
+		
 		assertEquals(city.getId(),(long) 1);
 		
 	}
@@ -42,6 +44,8 @@ class WeatherappApplicationTests {
 		
 		DailyForecast dailyForecast = forescastService.getDailyForescastByID((long) 1);
 		
+		forescastService.deleteDailyForecastByID((long) 1);
+		
 		assertEquals(dailyForecast.getId(),(long) 1);
 	}
 	
@@ -50,6 +54,8 @@ class WeatherappApplicationTests {
 		
 		HourlyForecast hourlyForecast = forescastService.getHourlyForecastByID((long) 1);
 		
+		forescastService.deleteHourlyForecastByID((long) 1);
+		
 		assertEquals(hourlyForecast.getId(),(long) 1);
 	}
 	
@@ -57,6 +63,8 @@ class WeatherappApplicationTests {
 	void currentConditiosTest() {
 		
 		CurrentConditions currentConditions = currentConditionsService.getCurrentConditionByID((long) 1);
+		
+		currentConditionsService.deleteCurrentConditionByID((long) 1);
 		
 		assertEquals(currentConditions.getId(),(long) 1);
 	}

@@ -94,4 +94,9 @@ public class CurrentConditionsServiceImpl implements ICurrentConditionsService {
 	public CurrentConditions getCurrentConditionByID(Long id) {
 		return currentConditionsRepository.getReferenceById(id);
 	}
+	
+	@Override
+	public void deleteCurrentConditionByID(Long id) {
+		currentConditionsRepository.deleteById(id);
+	}
 }

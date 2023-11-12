@@ -159,5 +159,15 @@ public class ForecastServiceImpl implements IForescastService{
 	public HourlyForecast getHourlyForecastByID(Long id) {
 		return hourlyForecastRepository.getReferenceById(id);
 	}
+	
+	@Override
+	public void deleteDailyForecastByID(Long id) {
+		dailyForecastRepository.deleteById(id);
+	}
+	
+	@Override
+	public void deleteHourlyForecastByID(Long id) {
+		hourlyForecastRepository.deleteById(id);
+	}
 
 }

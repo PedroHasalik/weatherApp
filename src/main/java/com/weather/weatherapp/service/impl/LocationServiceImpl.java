@@ -97,5 +97,10 @@ public class LocationServiceImpl implements IlocationService{
 	public City getCityByID(Long id) {
 		return cityRepository.getReferenceById(id);
 	}
+	
+	@Override
+	public void deleteCityByID(Long id) {
+		cityRepository.deleteById(id);
+	}
 
 }

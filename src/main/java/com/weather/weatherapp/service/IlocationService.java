@@ -13,5 +13,7 @@ public interface IlocationService {
 	public  ResponseEntity<Response> getLocation(String apiKey, String city) throws IOException, InterruptedException;
 	
 	public City getCityByID(Long id);
+	
+	public void deleteCityByID(Long id);
 
 }

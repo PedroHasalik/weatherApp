@@ -17,5 +17,9 @@ public interface IForescastService {
 	public DailyForecast getDailyForescastByID(Long id);
 	
 	public HourlyForecast getHourlyForecastByID(Long id);
+	
+	public void deleteDailyForecastByID(Long id);
+	
+	public void deleteHourlyForecastByID(Long id);
 
 }
