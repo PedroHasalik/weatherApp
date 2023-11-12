@@ -117,5 +117,15 @@ public class ForecastServiceImpl implements IForescastService{
 		hourlyForecastRepository.save(hourlyForecast);
 		
 	}
+	
+	@Override
+	public DailyForecast getDailyForescastByID(Long id) {
+		return dailyForecastRepository.getReferenceById(id);
+	}
+	
+	@Override
+	public HourlyForecast getHourlyForecastByID(Long id) {
+		return hourlyForecastRepository.getReferenceById(id);
+	}
 
 }

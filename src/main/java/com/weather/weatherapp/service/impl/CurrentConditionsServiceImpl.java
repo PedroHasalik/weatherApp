@@ -73,4 +73,9 @@ public class CurrentConditionsServiceImpl implements ICurrentConditionsService {
 		currentConditionsRepository.save(currentConditions);
 		
 	}
+	
+	@Override
+	public CurrentConditions getCurrentConditionByID(Long id) {
+		return currentConditionsRepository.getReferenceById(id);
+	}
 }

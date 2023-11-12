@@ -75,5 +75,9 @@ public class LocationServiceImpl implements IlocationService{
 		
 	}
 	
+	@Override
+	public City getCityByID(Long id) {
+		return cityRepository.getReferenceById(id);
+	}
 
 }
