@@ -20,6 +20,8 @@ import com.weather.weatherapp.repository.DailyForecastRepository;
 import com.weather.weatherapp.repository.HourlyForecastRepository;
 import com.weather.weatherapp.service.IForescastService;
 import com.weather.weatherapp.utils.JSONUtils;
+import com.weather.weatherapp.utils.ObtTimeStamp;
+import com.weather.weatherapp.utils.Response;
 
 @Service
 public class ForecastServiceImpl implements IForescastService{
@@ -37,9 +39,11 @@ public class ForecastServiceImpl implements IForescastService{
 	
 	
 	@Override
-	public ResponseEntity<ForecastDTO> getDailyForecast(String apikey, String cityId) throws IOException, InterruptedException{
+	public ResponseEntity<Response> getDailyForecast(String apikey, String cityId) throws IOException, InterruptedException{
 		
-		ResponseEntity<ForecastDTO> responseEntity = null;
+		Response response = new Response();
+		
+		ResponseEntity<Response> responseEntity = null;
 		
 		String url = baseUrl + "/forecasts/v1/daily/1day/" + cityId  + "?apikey=" + apikey;
 		
@@ -48,17 +52,30 @@ public class ForecastServiceImpl implements IForescastService{
 											 .uri(URI.create(url))
 											 .build();
 		
-		HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+		HttpResponse<String> responseHttp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 		
-		if(response.statusCode() == 200) {
+		if(responseHttp.statusCode() == 200) {
 			
 			ForecastDTO forecastDTO = new ForecastDTO();
 			
-			forecastDTO = JSONUtils.convertFromJsonToObject(response.body(),ForecastDTO.class);
+			forecastDTO = JSONUtils.convertFromJsonToObject(responseHttp.body(),ForecastDTO.class);
 			
-			responseEntity = new ResponseEntity<ForecastDTO>(forecastDTO, HttpStatusCode.valueOf(200));
+			response.setResponseCode(200);
+			response.setData(forecastDTO);
+			response.setStatus("Se obtuvo el pronostico del dia con exito");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(200));
 			
 			this.saveDailyForecast(forecastDTO);
+		} else {
+			
+			response.setResponseCode(responseHttp.statusCode());
+			response.setData("");
+			response.setStatus("Error con la API externa");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(responseHttp.statusCode()));
 		}
 			
 		return responseEntity;
@@ -76,9 +93,11 @@ public class ForecastServiceImpl implements IForescastService{
 	}
 	
 	@Override
-	public ResponseEntity<HourlyForecastDTO> getHourlyForecast(String apikey, String cityId) throws IOException, InterruptedException{
+	public ResponseEntity<Response> getHourlyForecast(String apikey, String cityId) throws IOException, InterruptedException{
 		
-		ResponseEntity<HourlyForecastDTO> responseEntity = null;
+		Response response = new Response();
+		
+		ResponseEntity<Response> responseEntity = null;
 		
 		String url = baseUrl + "/forecasts/v1/hourly/1hour/" + cityId  + "?apikey=" + apikey;
 		
@@ -87,17 +106,30 @@ public class ForecastServiceImpl implements IForescastService{
 											 .uri(URI.create(url))
 											 .build();
 		
-		HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+		HttpResponse<String> responseHttp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 		
-		if(response.statusCode() == 200) {
+		if(responseHttp.statusCode() == 200) {
 			
 			HourlyForecastDTO hourlyForecastDTO = new HourlyForecastDTO();
 			
-			hourlyForecastDTO = JSONUtils.convertFromJsonToObject(response.body().substring(1 , response.body().length() - 1), HourlyForecastDTO.class);
+			hourlyForecastDTO = JSONUtils.convertFromJsonToObject(responseHttp.body().substring(1 , responseHttp.body().length() - 1), HourlyForecastDTO.class);
 			
-			responseEntity = new ResponseEntity<HourlyForecastDTO>(hourlyForecastDTO, HttpStatusCode.valueOf(200));
+			response.setResponseCode(200);
+			response.setData(hourlyForecastDTO);
+			response.setStatus("Se obtuvo el pronostico del la hora con exito");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(200));
 			
 			this.saveHourlyForecast(hourlyForecastDTO);
+		} else {
+			
+			response.setResponseCode(responseHttp.statusCode());
+			response.setData("");
+			response.setStatus("Error con la API externa");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(responseHttp.statusCode()));
 		}
 		
 		

@@ -20,6 +20,8 @@ import com.weather.weatherapp.dto.city.CityDTO;
 import com.weather.weatherapp.repository.CityRepository;
 import com.weather.weatherapp.service.IlocationService;
 import com.weather.weatherapp.utils.JSONUtils;
+import com.weather.weatherapp.utils.ObtTimeStamp;
+import com.weather.weatherapp.utils.Response;
 
 
 
@@ -35,11 +37,13 @@ public class LocationServiceImpl implements IlocationService{
 	private HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 	
 	@Override
-	public ResponseEntity<List<CityDTO>> getLocation(String apiKey, String city) throws IOException, InterruptedException {
+	public ResponseEntity<Response> getLocation(String apiKey, String city) throws IOException, InterruptedException {
+		
+		Response response = new Response();
 		
 		List<CityDTO> cities =new ArrayList<CityDTO>();
 		
-		ResponseEntity<List<CityDTO>> responseEntity = null;
+		ResponseEntity<Response> responseEntity = null;
 
 		String url = baseUrl + "/locations/v1/cities/search?apikey=" + apiKey +"&q=" + city;
 		
@@ -48,15 +52,29 @@ public class LocationServiceImpl implements IlocationService{
 											 .uri(URI.create(url))
 											 .build();
 		
-		HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+		HttpResponse<String> responseHttp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 		
-		if(response.statusCode() == 200) {
+		if(responseHttp.statusCode() == 200) {
 			
-			cities = JSONUtils.convertFromJsonToList(response.body(), new TypeReference<List<CityDTO>>() {});
+			cities = JSONUtils.convertFromJsonToList(responseHttp.body(), new TypeReference<List<CityDTO>>() {});
 			
-			responseEntity = new ResponseEntity<List<CityDTO>>(cities, HttpStatusCode.valueOf(200));
+			response.setResponseCode(responseHttp.statusCode());
+			response.setData(cities);
+			response.setStatus("Se obtuvo la informacion de las ciudades con exito");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(200));
 			
 			this.saveCity(cities);
+		} else {
+			
+			response.setResponseCode(responseHttp.statusCode());
+			response.setData("");
+			response.setStatus("Error con la API externa");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(responseHttp.statusCode()));
+						
 		}
 				
 		return responseEntity;

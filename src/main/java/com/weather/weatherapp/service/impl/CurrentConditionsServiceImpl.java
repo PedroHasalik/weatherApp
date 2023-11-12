@@ -17,6 +17,8 @@ import com.weather.weatherapp.dto.currentConditions.CurrentConditionsDTO;
 import com.weather.weatherapp.repository.CurrentConditionsRepository;
 import com.weather.weatherapp.service.ICurrentConditionsService;
 import com.weather.weatherapp.utils.JSONUtils;
+import com.weather.weatherapp.utils.ObtTimeStamp;
+import com.weather.weatherapp.utils.Response;
 
 @Service
 public class CurrentConditionsServiceImpl implements ICurrentConditionsService {
@@ -31,9 +33,11 @@ public class CurrentConditionsServiceImpl implements ICurrentConditionsService {
 	private HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 
 	@Override
-	public ResponseEntity<CurrentConditionsDTO> getCurrentConditions(String apikey, String cityId) throws IOException, InterruptedException {
+	public ResponseEntity<Response> getCurrentConditions(String apikey, String cityId) throws IOException, InterruptedException {
 		
-		ResponseEntity<CurrentConditionsDTO> responseEntity = null;
+		Response response = new Response();
+		
+		ResponseEntity<Response> responseEntity = null;
 		
 		String url = baseUrl + "/currentconditions/v1/" + cityId  + "?apikey=" + apikey;
 		
@@ -42,18 +46,30 @@ public class CurrentConditionsServiceImpl implements ICurrentConditionsService {
 											 .uri(URI.create(url))
 											 .build();
 		
-		HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+		HttpResponse<String> responseHttp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 		
-		if(response.statusCode() == 200) {
+		if(responseHttp.statusCode() == 200) {
 			
 			CurrentConditionsDTO currentConditions = new CurrentConditionsDTO();
 			
-			currentConditions = JSONUtils.convertFromJsonToObject(response.body().substring(1 , response.body().length() - 1), CurrentConditionsDTO.class);
+			currentConditions = JSONUtils.convertFromJsonToObject(responseHttp.body().substring(1 , responseHttp.body().length() - 1), CurrentConditionsDTO.class);
 			
 			this.saveCurrentConditions(currentConditions);
 			
-			responseEntity = new ResponseEntity<CurrentConditionsDTO>(currentConditions, HttpStatusCode.valueOf(200));
+			response.setResponseCode(200);
+			response.setData(currentConditions);
+			response.setStatus("Se obtuvieron las condiciones actuales con exito");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
 			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(200));
+			
+		} else {
+			response.setResponseCode(responseHttp.statusCode());
+			response.setData("");
+			response.setStatus("Error con la API externa");
+			response.setTimeStamp(ObtTimeStamp.getCurrentTimestamp());
+			
+			responseEntity = new ResponseEntity<Response>(response, HttpStatusCode.valueOf(responseHttp.statusCode()));
 		}
 		
 		

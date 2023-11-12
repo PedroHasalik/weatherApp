@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 
 import com.weather.weatherapp.domain.CurrentConditions;
-import com.weather.weatherapp.dto.currentConditions.CurrentConditionsDTO;
+import com.weather.weatherapp.utils.Response;
 
 public interface ICurrentConditionsService {
 	
-	public ResponseEntity<CurrentConditionsDTO> getCurrentConditions(String apikey, String cityId) throws IOException, InterruptedException;
+	public ResponseEntity<Response> getCurrentConditions(String apikey, String cityId) throws IOException, InterruptedException;
 	
 	public CurrentConditions getCurrentConditionByID(Long id);
 }
